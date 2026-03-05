@@ -3,6 +3,8 @@ name: API Automation Tests
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   run-api-tests:
@@ -23,15 +25,23 @@ jobs:
       - name: Install Newman Reporter
         run: npm install newman-reporter-htmlextra
 
-      - name: Run Newman Tests
+      - name: Run API Tests with Newman
         run: |
+          mkdir -p reports
           npx newman run GroceryStore.collection.json \
           -e Grocery.environment.json \
-          -r cli,htmlextra \
-          --reporter-htmlextra-export report.html
+          -r cli,htmlextra,junit \
+          --reporter-htmlextra-export reports/report.html \
+          --reporter-junit-export reports/results.xml
 
-      - name: Upload Report
+      - name: Upload HTML Report
         uses: actions/upload-artifact@v4
         with:
-          name: newman-report
-          path: report.html
+          name: newman-html-report
+          path: reports/report.html
+
+      - name: Upload JUnit Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-junit-report
+          path: reports/results.xml
