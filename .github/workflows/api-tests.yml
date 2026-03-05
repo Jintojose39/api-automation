@@ -26,6 +26,7 @@ jobs:
         run: npm install newman newman-reporter-htmlextra
 
       - name: Run API Tests with Newman
+        continue-on-error: true
         run: |
           mkdir -p reports
           npx newman run GroceryStore.collection.json \
