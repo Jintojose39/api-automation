@@ -1,0 +1,917 @@
+{
+	"info": {
+		"_postman_id": "e5db5df0-58fe-47af-8a9b-70e6bf20757a",
+		"name": "Simple Grocery Store API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21847557"
+	},
+	"item": [
+		{
+			"name": "NavigateToStore",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/status",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllProducts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<canvas id=\"myChart\" height=\"75\"></canvas>\r",
+							"\r",
+							"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js\"></script> \r",
+							"\r",
+							"<script>\r",
+							"    var ctx = document.getElementById(\"myChart\");\r",
+							"\r",
+							"    var myChart = new Chart(ctx, {\r",
+							"        type: \"line\",\r",
+							"        data: {\r",
+							"            labels: [],\r",
+							"            datasets: [{\r",
+							"                label: 'Products',\r",
+							"                data: [],\r",
+							"                \r",
+							"                // Change these colours to customize the chart\r",
+							"                backgroundColor: \"rgba(75, 192, 192, 0.2)\",\r",
+							"                borderColor: \"rgba(75, 192, 192, 1)\",\r",
+							"                borderWidth: 1\r",
+							"            }]\r",
+							"        },\r",
+							"        options: {\r",
+							"            legend: { display: true },\r",
+							"            title: {\r",
+							"                display: true,\r",
+							"                text: 'Products Line Chart'\r",
+							"            },\r",
+							"            scales: {\r",
+							"                xAxes: [{\r",
+							"                    display: true,\r",
+							"                    scaleLabel: {\r",
+							"                        display: true,\r",
+							"                        labelString: 'Products'\r",
+							"                    }\r",
+							"                }],\r",
+							"                yAxes: [{\r",
+							"                    display: true,\r",
+							"                    scaleLabel: {\r",
+							"                        display: true,\r",
+							"                        labelString: 'Values'\r",
+							"                    }\r",
+							"                }]\r",
+							"            }\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.getData(function (err, value) {\r",
+							"        myChart.data.datasets[0].data = value.response.data;\r",
+							"        myChart.data.labels = value.response.labels;\r",
+							"        myChart.update();\r",
+							"    });\r",
+							"\r",
+							"</script>`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    var res = pm.response.json();\r",
+							"    \r",
+							"    var visualizerData = {\r",
+							"        labels: res.map(product => product.name), // Assuming 'name' is used for labels\r",
+							"        data: res.map(product => product.inStock ? 1 : 0) // Using inStock as a binary value\r",
+							"    };\r",
+							"\r",
+							"    return {response: visualizerData};\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());\r",
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(700);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response is an array with at least one element\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Each product object has the required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"    \r",
+							"    responseData.forEach(product => {\r",
+							"        pm.expect(product).to.have.all.keys('id', 'category', 'name', 'inStock');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that 'id' is a non-negative integer and 'inStock' is a boolean value\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"\r",
+							"    responseData.forEach(product => {\r",
+							"        pm.expect(product.id).to.be.a('number').and.to.be.at.least(0);\r",
+							"        pm.expect(product.inStock).to.be.a('boolean');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/products?results=20",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "eggs",
+							"disabled": true
+						},
+						{
+							"key": "id",
+							"value": "4646",
+							"disabled": true
+						},
+						{
+							"key": "results",
+							"value": "20"
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetSingleProducts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Product ID matches\", () => {\r",
+							"    pm.expect(json.id).to.eql(Number(pm.variables.get(\"productId\")));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Product is in stock property exists\", () => {\r",
+							"    pm.expect(json).to.have.property(\"inStock\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/products/{{productId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"products",
+						"{{productId}}"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "4641",
+							"disabled": true
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateApiClient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"token\", pm.response.json().accessToken);\r",
+							"pm.test(\"Status code is 201\", () => {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Access token is generated\", () => {\r",
+							"    pm.expect(json.accessToken).to.be.a(\"string\");\r",
+							"    pm.expect(json.accessToken.length).to.be.above(10);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const uniqueEmail = \"jinto\" + Date.now() + \"@test.com\";\r",
+							"pm.environment.set(\"uniqueEmail\", uniqueEmail);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "mySecureToken",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"clientName\": \"Jinto\",\r\n  \"clientEmail\": \"{{uniqueEmail}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api-clients",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api-clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"//pm.environment.set(\"cartId\", jsonData.cartId);\r",
+							"pm.collectionVariables.set(\"cartId\", pm.response.json().cartId);\r",
+							"console.log(jsonData.cartId)\r",
+							"\r",
+							"pm.test(\"Cart created successfully\", () => {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Cart ID exists\", () => {\r",
+							"    pm.expect(json.cartId).to.be.a(\"string\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "4641",
+							"disabled": true
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is JSON\", () => {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+							"        .to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Items is an array\", () => {\r",
+							"    pm.expect(json.items).to.be.an(\"array\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Created field exists\", () => {\r",
+							"    pm.expect(json).to.have.property(\"created\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Created is valid ISO date\", () => {\r",
+							"    const date = new Date(json.created);\r",
+							"    pm.expect(date.toString()).to.not.eql(\"Invalid Date\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"console.log(\"Token:\", pm.collectionVariables.get(\"token\"));\r",
+							"console.log(\"CartId:\", pm.collectionVariables.get(\"cartId\"));\r",
+							"\r",
+							"// const requestBody = JSON.parse(pm.request.body.raw);\r",
+							"// pm.collectionVariables.set(\"productId\", requestBody.productId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"content-length": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/carts/{{cartId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						"{{cartId}}"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "4641",
+							"disabled": true
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddItemsToCart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(\"Status:\", pm.response.code);\r",
+							"console.log(\"Body:\", pm.response.text());\r",
+							"\r",
+							"\r",
+							"pm.test(\"Item added to cart\", () => {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"const json = pm.response.json();\r",
+							"pm.test(\"Item ID generated\", () => {\r",
+							"    pm.expect(json.itemId).to.be.a(\"number\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"productId\": 1225,\r\n  \"quantity\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/carts/{{cartId}}/items",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						"{{cartId}}",
+						"items"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "4641",
+							"disabled": true
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCartItems",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"\r",
+							"const json = pm.response.json();\r",
+							"const expectedProductId = Number(pm.collectionVariables.get(\"productId\"));\r",
+							"console.log(`Expected Id :${expectedProductId}`)\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response contains expected productId\", () => {\r",
+							"    const productIds = json.map(item => item.productId);\r",
+							"    pm.expect(productIds).to.include(expectedProductId);\r",
+							"});\r",
+							"\r",
+							"// pm.test(\"Order contains expected productId\", () => {\r",
+							"//     const productIds = json.items.map(item => item.productId);\r",
+							"//     pm.expect(productIds).to.include(expectedProductId);\r",
+							"// });\r",
+							"// pm.test(\"Quantity is correct\", () => {\r",
+							"//     pm.expect(json.items[0].quantity).to.eql(1);\r",
+							"// });\r",
+							"// pm.test(\"Invoice contains HTML content\", () => {\r",
+							"//     pm.expect(json.invoice).to.include(\"<html>\");\r",
+							"// });"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/carts/{{cartId}}/items",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						"{{cartId}}",
+						"items"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "4641",
+							"disabled": true
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateNewOrder",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const json = pm.response.json();\r",
+							"console.log(\"orderId:\", json.orderId);\r",
+							"pm.collectionVariables.set(\"orderId\", json.orderId);\r",
+							"console.log(\"Status:\", pm.response.code);\r",
+							"console.log(\"Body:\", pm.response.text());\r",
+							"console.log(pm.collectionVariables.get(\"orderId\"));\r",
+							"\r",
+							"pm.test(\"Order created successfully\", () => {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Order ID generated\", () => {\r",
+							"    pm.expect(json.orderId).to.be.a(\"string\");\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"orderId\", json.orderId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomName = pm.variables.replaceIn(\"{{$randomFullName}}\");\r",
+							"pm.collectionVariables.set(\"customerName\", randomName);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"cartId\": \"{{cartId}}\",\r\n\"customerName\": \"{{customerName}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "4641",
+							"disabled": true
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCreatedOrder",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders/{{orderId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"{{orderId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PlaceAnOrder",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"string_you_want_to_search\");\r",
+							"});\r",
+							"const json = pm.response.json();\r",
+							"\r",
+							"\r",
+							"pm.test(\"Order ID matches\", () => {\r",
+							"    pm.expect(json.id).to.eql(pm.collectionVariables.get(\"orderId\"));\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"warning": "This is a duplicate header and will be overridden by the Authorization header generated by Postman.",
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/{{orderId}}?invoice=true",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"{{orderId}}"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "4641",
+							"disabled": true
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"disabled": true
+						},
+						{
+							"key": "invoice",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ModifyOrder",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"warning": "This is a duplicate header and will be overridden by the Authorization header generated by Postman.",
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "4641",
+							"disabled": true
+						},
+						{
+							"key": "available",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "cartId",
+			"value": "lJMrGLprCGhgjry16M6GH"
+		},
+		{
+			"key": "token",
+			"value": "3c72b0783015fe5cb5ed56a5cbaf8c0f053c7cabe3a4b23fa3eeacf996a92396"
+		},
+		{
+			"key": "orderId",
+			"value": ""
+		},
+		{
+			"key": "productId",
+			"value": "1225"
+		},
+		{
+			"key": "customerName",
+			"value": ""
+		}
+	]
+}

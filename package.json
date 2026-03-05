@@ -1,0 +1,17 @@
+{
+  "name": "api-automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "api:test": "newman run GroceryStore.collection.json -e Grocery.environment.json",
+    "api:report": "newman run GroceryStore.collection.json -e Grocery.environment.json -r cli,htmlextra --reporter-htmlextra-export report.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "newman-reporter-htmlextra": "^1.23.1"
+  }
+}
